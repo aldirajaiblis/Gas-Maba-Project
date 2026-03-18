@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Latihan Barisan</title>
+
+<style>
+body {
+  font-family: Arial;
+  text-align: center;
+  background: #0f172a;
+  color: #fff;
+}
+
+.card {
+  width: 500px;
+  margin: 60px auto;
+  padding: 20px;
+  background: #1e293b;
+  border-radius: 10px;
+}
+
+.option {
+  background: #334155;
+  margin: 6px 0;
+  padding: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.option:hover {
+  background: #475569;
+}
+
+.benar {
+  background: #16a34a !important;
+}
+
+.salah {
+  background: #dc2626 !important;
+}
+
+button {
+  margin-top: 10px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+
+#exp {
+  margin-top: 12px;
+  display: none;
+  background: #020617;
+  padding: 10px;
+  border-radius: 6px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h2>Gas Maba, 17 Maret - 30 Maret</h2>
+
+  <div>
+    ✅ Benar: <span id="b">0</span> |
+    ❌ Salah: <span id="s">0</span>
+  </div>
+
+  <p id="q">...</p>
+  <div id="opsi"></div>
+
+  <button onclick="soalBaru()">Soal Baru</button>
+  <button onclick="resetScore()">Reset</button>
+
+  <p id="res"></p>
+  <div id="exp"></div>
+</div>
+
+<script>
+let jawaban = 0
+let expText = ""
+let udah = false
+
+let b = 0
+let s = 0
+
+function r(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
+function acak(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1))
+    ;[arr[i], arr[j]] = [arr[j], arr[i]]
+  }
+}
+
+function bikinOpsi(bener) {
+  let list = [bener]
+
+  while (list.length < 5) {
+    let fake = bener + r(-20, 20)
+    if (!list.includes(fake)) list.push(fake)
+  }
+
+  acak(list)
+
+  let huruf = ["A","B","C","D","E"]
+  let html = ""
+
+  list.forEach((x, i) => {
+    html += `
+      <div class="option" data="${x}" onclick="cek(this, ${x})">
+        ${huruf[i]}. ${x}
+      </div>
+    `
+  })
+
+  document.getElementById("opsi").innerHTML = html
+}
+
+function soalBaru() {
+  udah = false
+
+  let tipe = r(1, 7)
+  let arr = []
+  jawaban = 0
+  expText = ""
+
+  switch(tipe) {
+
+    case 1:
+      let a1 = r(1,20)
+      let d1 = r(2,10)
+      for (let i = 0; i < 5; i++) arr.push(a1 + i * d1)
+      jawaban = a1 + 5 * d1
+      expText = "Beda tetap +" + d1
+      break
+
+    case 2:
+      let start = r(50,100)
+      let dA = r(5,15)
+      let dB = r(20,40)
+      arr = [start]
+      for (let i = 1; i < 5; i++) {
+        arr.push(arr[i-1] + (i % 2 ? dA : dB))
+      }
+      jawaban = arr[4] + dA
+      expText = "Pola +" + dA + " lalu +" + dB
+      break
+
+    case 3:
+      let a3 = r(1,10)
+      let p = r(1,5)
+      let q = r(1,5)
+      let r3 = r(5,15)
+      arr = [a3, a3 + p, a3 - q]
+      for (let i = 3; i < 5; i++) {
+        arr.push(arr[i-3] + r3)
+      }
+      jawaban = arr[2] + r3
+      expText = "Ulang 3 langkah, +" + r3
+      break
+
+    case 4:
+      let a4 = r(10,30)
+      let beda = r(5,10)
+      let naik = r(3,8)
+      arr = [a4]
+      for (let i = 1; i < 5; i++) {
+        arr.push(arr[i-1] + beda)
+        beda += naik
+      }
+      jawaban = arr[4] + beda
+      expText = "Beda naik +" + naik
+      break
+
+    case 5:
+      let a5 = r(1,5)
+      arr = [a5, a5+1, a5+2]
+      for (let i = 3; i < 5; i++) {
+        arr.push(arr[i-3] * 2)
+      }
+      jawaban = arr[2] * 2
+      expText = "Tiap 3 langkah x2"
+      break
+
+    case 6:
+      let a6 = r(10,20)
+      let x = r(3,10)
+      let y = r(5,12)
+      arr = [a6]
+      for (let i = 1; i < 5; i++) {
+        arr.push(arr[i-1] + (i % 2 ? x : y))
+      }
+      jawaban = arr[4] + x
+      expText = "Pola +" + x + " lalu +" + y
+      break
+
+    case 7:
+      let a7 = r(2,5)
+      arr = [a7]
+      let ops = ["+","-","x"]
+      for (let i = 1; i < 5; i++) {
+        let op = ops[(i-1) % 3]
+        if (op === "+") arr.push(arr[i-1] + i)
+        else if (op === "-") arr.push(arr[i-1] - i)
+        else arr.push(arr[i-1] * i)
+      }
+
+      let nextOp = ops[4 % 3]
+      if (nextOp === "+") jawaban = arr[4] + 5
+      else if (nextOp === "-") jawaban = arr[4] - 5
+      else jawaban = arr[4] * 5
+
+      expText = "Operasi campur (+, -, x)"
+      break
+  }
+
+  document.getElementById("q").innerText = arr.join(", ") + ", ..."
+  document.getElementById("res").innerText = ""
+  document.getElementById("exp").style.display = "none"
+
+  bikinOpsi(jawaban)
+}
+
+function cek(el, pilih) {
+  if (udah) return
+  udah = true
+
+  let semua = document.querySelectorAll(".option")
+
+  semua.forEach(o => {
+    let val = parseInt(o.getAttribute("data"))
+    if (val === jawaban) o.classList.add("benar")
+    if (o === el && pilih !== jawaban) o.classList.add("salah")
+    o.style.pointerEvents = "none"
+  })
+
+  if (pilih === jawaban) {
+    b++
+    document.getElementById("res").innerText = "✅ Benar"
+  } else {
+    s++
+    document.getElementById("res").innerText = "❌ Salah, jawabannya " + jawaban
+  }
+
+  document.getElementById("b").innerText = b
+  document.getElementById("s").innerText = s
+
+  let exp = document.getElementById("exp")
+  exp.innerText = "Pembahasan: " + expText
+  exp.style.display = "block"
+}
+
+function resetScore() {
+  b = 0
+  s = 0
+  document.getElementById("b").innerText = b
+  document.getElementById("s").innerText = s
+}
+
+soalBaru()
+</script>
+
+</body>
+</html>
